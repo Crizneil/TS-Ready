@@ -6,6 +6,8 @@ const ASSETS = [
   './app.js',
   './data.js',
   './manifest.json',
+  './icon-192.png',
+  './icon-512.png',
   'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap'
 ];
 

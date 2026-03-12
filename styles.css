@@ -533,21 +533,39 @@ textarea.form-control {
     
     .nav-item {
         flex-direction: column;
-        gap: 4px;
-        padding: 8px 12px;
-        font-size: 0.7rem;
+        gap: 0;
+        padding: 4px 0;
+        font-size: 0.65rem;
+        flex: 1;
+        border-radius: 0;
+        background: transparent !important;
+        box-shadow: none !important;
     }
     
     .nav-item i {
-        font-size: 1.5rem;
+        font-size: 1.4rem;
+        margin-bottom: 2px;
+    }
+    
+    .nav-item.active {
+        color: var(--accent);
+    }
+    
+    .nav-item.active i {
+        color: var(--accent);
     }
     
     header {
         padding: 0 16px;
+        height: 60px; /* Slimmer on mobile */
+    }
+    
+    .header-title {
+        font-size: 1.1rem;
     }
     
     .search-container {
-        display: none; /* Might need a toggle button on mobile */
+        display: none;
     }
     
     .mobile-search {
@@ -564,8 +582,10 @@ textarea.form-control {
     }
 
     .fab {
-        bottom: 90px;
-        right: 20px;
+        bottom: 85px; /* Stay above bottom nav */
+        right: 16px;
+        width: 50px;
+        height: 50px;
     }
 }
 
