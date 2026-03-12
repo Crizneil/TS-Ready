@@ -36,11 +36,14 @@
     }
 }
 
-* {
-    box-sizing: border-box;
+html, body {
     margin: 0;
     padding: 0;
-    -webkit-tap-highlight-color: transparent;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Prevent ANY global scrolling outside main containers */
+    touch-action: pan-y; /* Prevent pinch zoom */
+    -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -48,10 +51,9 @@ body {
     background-color: var(--bg-color);
     color: var(--text-primary);
     display: flex;
-    height: 100vh;
     width: 100%;
     overflow: hidden;
-    position: fixed; /* Prevents bounce/scroll issues on mobile */
+    position: fixed; 
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -157,6 +159,9 @@ body {
     display: flex;
     flex-direction: column;
     position: relative;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 /* Header */
@@ -527,11 +532,18 @@ textarea.form-control {
     .nav-section {
         display: flex;
         flex-direction: row;
-        padding: 0 10px;
+        padding: 0;
+        margin: 0;
+        width: 100%;
         overflow-x: auto;
         overflow-y: hidden;
-        gap: 10px;
+        -webkit-overflow-scrolling: touch;
         align-items: center;
+        scrollbar-width: none; /* Hide scrollbar for cleaner look */
+    }
+    
+    .nav-section::-webkit-scrollbar {
+        display: none;
     }
     
     .nav-item {
