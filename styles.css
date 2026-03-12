@@ -49,7 +49,9 @@ body {
     color: var(--text-primary);
     display: flex;
     height: 100vh;
+    width: 100%;
     overflow: hidden;
+    position: fixed; /* Prevents bounce/scroll issues on mobile */
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -213,8 +215,9 @@ header {
 
 .grid-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    width: 100%;
 }
 
 /* Cards */
