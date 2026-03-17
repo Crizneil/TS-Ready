@@ -626,3 +626,107 @@ textarea.form-control {
     margin-bottom: 16px;
     opacity: 0.5;
 }
+
+/* Portrait Script Layout */
+.portrait-container {
+    max-width: 650px;
+    margin: 0 auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 100px;
+}
+
+.script-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+    border-left: 4px solid var(--accent);
+}
+
+.script-card.active {
+    border-color: var(--accent);
+    box-shadow: var(--shadow-hover);
+    transform: scale(1.02);
+}
+
+.script-bubble {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: var(--text-primary);
+    font-weight: 500;
+    margin-bottom: 16px;
+    font-style: italic;
+    padding: 16px;
+    background: var(--accent-light);
+    border-radius: 12px;
+}
+
+.script-instruction {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.script-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.script-checkbox-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.script-checkbox-item:hover {
+    background: rgba(var(--accent-rgb), 0.05);
+}
+
+.script-checkbox-item input {
+    margin-top: 4px;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent);
+}
+
+.script-checkbox-item label {
+    cursor: pointer;
+    line-height: 1.4;
+}
+
+.script-checkbox-item.checked label {
+    text-decoration: line-through;
+    opacity: 0.5;
+}
+
+.portrait-scroll-area {
+    height: 100%;
+    overflow-y: auto;
+    padding: 40px 20px;
+    scroll-behavior: smooth;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Hide navigation on super small mobile to focus on script */
+@media (max-width: 480px) {
+    .portrait-container {
+        padding: 10px;
+    }
+}

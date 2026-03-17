@@ -4,20 +4,11 @@ const categories = [
     { id: 'computer', icon: 'ph-desktop', label: 'Computer' },
     { id: 'networking', icon: 'ph-wifi-high', label: 'Networking' },
     { id: 'hardware', icon: 'ph-cpu', label: 'Hardware' },
-    { id: 'software', icon: 'ph-app-window', label: 'Software' },
-    { id: 'general', icon: 'ph-chats', label: 'General Client Communication' }
+    { id: 'software', icon: 'ph-app-window', label: 'Software' }
 ];
 
 const defaultPhrases = [
-    // General Client Communication
-    { id: 'g1', category: 'general', text: "Can you please describe the problem you are experiencing?", tags: ['start', 'issue', 'problem', 'describe'] },
-    { id: 'g2', category: 'general', text: "I'll guide you step by step to resolve the issue.", tags: ['guide', 'help', 'step'] },
-    { id: 'g3', category: 'general', text: "Could you please share your screen with me so I can take a look?", tags: ['screen', 'share', 'remote'] },
-    { id: 'g4', category: 'general', text: "Thank you for your patience while I look into this for you.", tags: ['patience', 'wait', 'hold', 'check'] },
-    { id: 'g5', category: 'general', text: "May I have your name and employee ID, please?", tags: ['name', 'id', 'employee', 'identity'] },
-    { id: 'g6', category: 'general', text: "Is it okay if I place you on a brief hold while I consult with my team?", tags: ['hold', 'wait', 'team', 'consult'] },
-    { id: 'g7', category: 'general', text: "Could you provide me with the ticket number from your previous call?", tags: ['ticket', 'number', 'previous', 'reference'] },
-    { id: 'g8', category: 'general', text: "I've successfully resolved the issue. Is there anything else I can help you with today?", tags: ['resolved', 'fix', 'else', 'finish'] },
+    // Phone Support Specific
     { id: 'g9', category: 'general', text: "I apologize for the inconvenience this has caused you.", tags: ['apologize', 'sorry', 'inconvenience'] },
     { id: 'g10', category: 'general', text: "I will need to escalate this ticket to our Level 2 support team.", tags: ['escalate', 'level 2', 'tier', 'transfer'] },
     { id: 'g11', category: 'general', text: "When is a good time for us to call you back regarding this?", tags: ['callback', 'time', 'schedule'] },
@@ -243,5 +234,55 @@ const supportTools = {
         "Have you changed any passwords recently?",
         "Were there any power outages or internet drops recently?",
         "Is this a company-issued device or a personal device?"
+    ]
+};
+const callFlowData = {
+    greeting: "Hi! Thank you for calling Tech Support. My name is Cris, how can I help you today?",
+    steps: [
+        {
+            id: 'step1',
+            title: 'Step 1: Opening & Verification',
+            items: [
+                'Greeting (Professional & Friendly)',
+                'Active Listening (Let the customer speak)',
+                'Verify Customer Name',
+                'Verify Email Address',
+                'Verify Account / Asset ID',
+                'Identify Device Model / OS',
+            ],
+            hasNotes: true
+        },
+        {
+            id: 'step2',
+            title: 'Step 2: Empathy & Clarification',
+            items: [
+                'Empathy Statement: "I understand how frustrating that can be. Let\'s work together to fix this."',
+                'Formula: Listen - Clarify - Solve - Confirm',
+                'Clarifying Questions (No Jargon: "Router settings update" instead of "DHCP conflict")',
+            ],
+            hasClarification: true
+        },
+        {
+            id: 'step3',
+            title: 'Step 3: Troubleshooting (OSI Method)',
+            items: [
+                'Layer 1: Physical (Check Cables / Power)',
+                'Layer 2: Datalink (Check Connection / WiFi)',
+                'Layer 3: Network (Ping / IP Check)',
+                'Layer 4: Transport (Software Update / Reset)',
+                'Layer 7: Application (Restart App / Clear Cache)',
+            ]
+        },
+        {
+            id: 'step4',
+            title: 'Step 4: Closing',
+            items: [
+                'Confirm Resolution (Is the issue fixed?)',
+                'Summarize Steps Taken',
+                'Offer Additional Assistance',
+                'One-Transfer Rule: "Only transfer if truly needed; don\'t leave until connected."',
+                'Professional Sign-off',
+            ]
+        }
     ]
 };

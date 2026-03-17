@@ -128,6 +128,23 @@
         </div>
     </div>
 
+    <!-- Quick Notes Modal -->
+    <div class="modal-overlay" id="quick-notes-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title"><i class="ph ph-note-pencil"></i> Quick Notes</h2>
+                <button class="btn-icon" id="close-quick-notes-btn"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="modal-body">
+                <textarea class="form-control" id="global-quick-notes" placeholder="Customer Name: \nEmail: \nAccount ID: \nQuick Details..." style="height: 300px;"></textarea>
+                <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+                    <button class="btn btn-secondary" id="reset-notes-btn">Clear All Notes</button>
+                    <button class="btn btn-primary" id="save-notes-btn">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast -->
     <div class="toast" id="toast">Copied to clipboard!</div>
 

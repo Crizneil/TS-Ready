@@ -4,7 +4,8 @@ const state = {
     searchQuery: '',
     favorites: JSON.parse(localStorage.getItem('it_ready_favs')) || [],
     customPhrases: JSON.parse(localStorage.getItem('it_ready_custom')) || [],
-    darkMode: localStorage.getItem('it_ready_dark') === 'true'
+    darkMode: localStorage.getItem('it_ready_dark') === 'true',
+    callFlowStates: JSON.parse(localStorage.getItem('it_ready_callflow_states')) || {}
 };
 
 // --- DOM Elements ---
@@ -22,9 +23,8 @@ const readModal = document.getElementById('read-modal');
 const readModeContent = document.getElementById('read-mode-content');
 const dynamicFabBtn = document.getElementById('dynamic-fab-btn');
 const fabIcon = document.getElementById('fab-icon');
-const checklistModal = document.getElementById('checklist-modal');
-const checklistContent = document.getElementById('checklist-content');
-const checklistTitle = document.getElementById('checklist-title');
+const globalQuickNotesModal = document.getElementById('quick-notes-modal');
+const globalQuickNotesTextarea = document.getElementById('global-quick-notes');
 
 // --- Initialization ---
 function init() {
@@ -83,12 +83,24 @@ function setupEventListeners() {
     readModal.addEventListener('click', (e) => {
         if (e.target === readModal) readModal.classList.remove('active');
     });
-    checklistModal.addEventListener('click', (e) => {
-        if (e.target === checklistModal) closeChecklistModal();
-    });
     
-    document.getElementById('close-checklist-btn').addEventListener('click', closeChecklistModal);
-    document.getElementById('done-checklist-btn').addEventListener('click', closeChecklistModal);
+    // Quick Notes Modal Background Click
+    globalQuickNotesModal.addEventListener('click', (e) => {
+        if (e.target === globalQuickNotesModal) globalQuickNotesModal.classList.remove('active');
+    });
+
+    // Quick Notes Modal
+    document.getElementById('close-quick-notes-btn').addEventListener('click', () => globalQuickNotesModal.classList.remove('active'));
+    document.getElementById('save-notes-btn').addEventListener('click', () => globalQuickNotesModal.classList.remove('active'));
+    document.getElementById('reset-notes-btn').addEventListener('click', () => {
+        if (confirm('Clear all quick notes?')) {
+            globalQuickNotesTextarea.value = '';
+            localStorage.setItem('it_ready_quick_notes', '');
+        }
+    });
+    globalQuickNotesTextarea.addEventListener('input', (e) => {
+        localStorage.setItem('it_ready_quick_notes', e.target.value);
+    });
 
     // Card delegation (Copy, Read, Fav, Delete)
     contentGrid.addEventListener('click', (e) => {
@@ -232,38 +244,23 @@ function setView(viewId) {
     
     renderView();
 }
-
 function renderView() {
+
     if (state.view === 'tools' && !state.searchQuery) {
         contentGrid.style.display = 'none';
         toolsContainer.style.display = 'block';
         renderTools();
-        dynamicFabBtn.style.display = 'none';
+        dynamicFabBtn.style.display = 'flex';
+        fabIcon.className = 'ph ph-note-pencil';
+        dynamicFabBtn.title = 'Quick Notes';
         return;
     }
 
     contentGrid.style.display = 'grid';
     toolsContainer.style.display = 'none';
     dynamicFabBtn.style.display = 'flex';
-    
-    // Update FAB Icon based on View
-    const checklistMap = {
-        'computer': 'chk_computer',
-        'printer': 'chk_printer',
-        'networking': 'chk_network',
-        'software': 'chk_software',
-        'phone': 'chk_phone',
-        'hardware': 'chk_hardware',
-        'general': 'chk_general'
-    };
-    
-    if (checklistMap[state.view]) {
-        fabIcon.className = 'ph ph-list-checks';
-        dynamicFabBtn.title = 'Troubleshooting Checklist';
-    } else {
-        fabIcon.className = 'ph ph-plus';
-        dynamicFabBtn.title = 'Add Custom Phrase';
-    }
+    fabIcon.className = 'ph ph-note-pencil';
+    dynamicFabBtn.title = 'Quick Notes';
 
     let phrasesToRender = getAllPhrases();
 
@@ -284,8 +281,21 @@ function renderView() {
         }
     }
 
+    contentGrid.style.display = 'grid';
+    
+    const isCategory = categories.some(cat => cat.id === state.view);
+    const callFlowHtml = (isCategory && !state.searchQuery) ? renderIntegratedCallFlow(state.view) : '';
+
+    if (isCategory && !state.searchQuery) {
+        contentGrid.innerHTML = callFlowHtml;
+        contentGrid.className = 'portrait-scroll-area';
+        contentGrid.style.display = 'block';
+        return;
+    }
+
+    contentGrid.className = 'grid-list';
     if (phrasesToRender.length === 0) {
-        contentGrid.innerHTML = `
+        contentGrid.innerHTML = callFlowHtml + `
             <div class="empty-state" style="grid-column: 1 / -1;">
                 <i class="ph ph-empty"></i>
                 <h3>No phrases found</h3>
@@ -297,7 +307,7 @@ function renderView() {
     }
     
     contentGrid.style.display = 'grid';
-    contentGrid.innerHTML = phrasesToRender.map(p => {
+    contentGrid.innerHTML = callFlowHtml + phrasesToRender.map(p => {
         const isFav = state.favorites.includes(p.id);
         const isCustom = p.id.startsWith('cst_');
         return `
@@ -368,6 +378,7 @@ function renderTools() {
     toolsContainer.innerHTML = html;
 }
 
+
 // --- Utils ---
 function showToast() {
     const toast = document.getElementById('toast');
@@ -400,42 +411,173 @@ function closeAddModal() {
 }
 
 function handleFabClick() {
-    const checklistMap = {
-        'computer': 'chk_computer',
-        'printer': 'chk_printer',
-        'networking': 'chk_network',
-        'software': 'chk_software',
-        'phone': 'chk_phone',
-        'hardware': 'chk_hardware',
-        'general': 'chk_general'
+    globalQuickNotesTextarea.value = localStorage.getItem('it_ready_quick_notes') || '';
+    globalQuickNotesModal.classList.add('active');
+}
+
+function renderIntegratedCallFlow(categoryId) {
+    const scripts = {
+        'phone': 'I understand you are having trouble with your phone or VoIP line. "I understand how frustrating it is when your communication tools aren\'t working. Let\'s check your device status and connectivity right away."',
+        'printer': '"I see you are having issues with your printer. I know how important it is to get those documents out. Let\'s verify the physical connections and see what\'s happening in the print queue."',
+        'computer': '"I understand your computer is not performing as expected. A slow system can really hinder your work. We\'ll look into the system resources and recent updates to find the bottleneck."',
+        'networking': '"I see your internet connection is unstable. Being offline is never ideal. Let\'s check your router and network configurations to get you back online."',
+        'hardware': '"I understand a piece of hardware is malfunctioning. Let\'s verify the physical installation and drivers to see if we can get it responding again."',
+        'software': '"I see you are having trouble with an application. Software errors can be tricky. Let\'s check for updates and license status to ensure everything is configured correctly."',
+        'general': '"I\'m happy to help you with your IT-related inquiry. Let\'s start by narrowing down the problem so I can provide the best solution."'
     };
 
-    const chkId = checklistMap[state.view];
-    if (chkId) {
-        openChecklistModal(chkId);
+    const troubleshootingScriptsMap = {
+        'phone': [
+            'Could you please check if the VoIP power and Ethernet cables are securely plugged into the back of the phone?',
+            'Can you verify if the device volume is turned up and that the mute button isn\'t active?',
+            'Let\'s try testing the microphone on another application to see if the issue is software-specific.',
+            'I\'d like you to restart the VoIP phone or softphone application now.',
+            'I\'m checking your internet stability on my end; please let me know if you notice any other devices losing connection.'
+        ],
+        'printer': [
+            'Please check the paper tray for any jams or if it\'s simply out of paper.',
+            'Let\'s verify the ink or toner levels through the printer control panel.',
+            'I\'d like you to restart the printer, and I will reset the print spooler on your computer.',
+            'Could you double-check the USB or network cable connecting the printer to your device?',
+            'I\'m going to clear any stuck print jobs from the queue now.'
+        ],
+        'computer': [
+            'I\'d like you to perform a full power cycle by restarting your system now.',
+            'Could you open Task Manager and tell me if you see any applications using a high percentage of CPU or RAM?',
+            'I\'ll check for any pending OS or critical driver updates.',
+            'I\'m going to run a quick scan for registry or system errors.',
+            'Let\'s verify how much available disk space you have on your primary drive.'
+        ],
+        'networking': [
+            'Could you please power cycle your router and modem by unplugging them for 30 seconds?',
+            'I\'m going to flush your DNS and reset your IP configuration now.',
+            'Is it possible to test the connection on a different device to see if the issue is isolated?',
+            'I\'ll check the ISP service status for your area to rule out an external outage.',
+            'Let\'s verify if any firewall or proxy settings were recently changed.'
+        ],
+        'hardware': [
+            'I\'d like you to reseat any external cables or components related to the device.',
+            'I\'m checking the Device Manager now to see if there are any error icons listed.',
+            'Let\'s run the built-in hardware diagnostic tool to check for component failure.',
+            'Could you try plugging the device into a different port?',
+            'I\'ll check for the latest driver updates for this specific component.'
+        ],
+        'software': [
+            'Please check if there are any updates available within the application settings.',
+            'I\'d like to try clearing the application\'s cache and temporary data.',
+            'Let\'s re-verify your software license and login credentials.',
+            'Try running the application as an Administrator to see if it resolves the issue.',
+            'If the problem persists, we may need to reinstall the application files.'
+        ]
+    };
+
+    const script = scripts[categoryId] || scripts['general'];
+    const troubleshootingScripts = troubleshootingScriptsMap[categoryId] || troubleshootingScriptsMap['phone'];
+    
+    const steps = [
+        {
+            id: 'step1',
+            title: 'Step 1: Opening & Verification',
+            instruction: 'GREET THE CUSTOMER',
+            bubbles: [
+                'Hi! Thank you for calling Tech Support. My name is Cris, how can I help you today?',
+                'I\'ve noted your symptoms. Before we proceed, may I verify your name and the device you are using?'
+            ]
+        },
+        {
+            id: 'step2',
+            title: 'Step 2: Empathy & Clarification',
+            instruction: 'SHOW EMPATHY & SET EXPECTATIONS',
+            bubbles: [
+                script,
+                'To make sure I have this right: [Summarize the User\'s Issue]. Is that correct?'
+            ]
+        },
+        {
+            id: 'step3',
+            title: 'Step 3: Troubleshooting (' + categoryId.toUpperCase() + ')',
+            instruction: 'FOLLOW THE TROUBLESHOOTING SCRIPT',
+            bubbles: troubleshootingScripts
+        },
+        {
+            id: 'step4',
+            title: 'Step 4: Closing',
+            instruction: 'OFFER ADDITIONAL ASSISTANCE & SIGN-OFF',
+            bubbles: [
+                'I\'ve summarized the fix for your records. Is your issue fully resolved now?',
+                'Is there anything else I can assist you with today?',
+                'Thank you for calling Tech Support. Have a great day!',
+                'Professional Sign-off: "Again, my name is Cris. Thank you for your time."'
+            ]
+        }
+    ];
+
+    return `
+        <div class="portrait-container">
+            <h2 style="text-align: center; margin-bottom: 32px; color: var(--accent);">
+                <i class="ph ph-scroll"></i> Support Script: ${categoryId.toUpperCase()}
+            </h2>
+            ${steps.map((step, sIdx) => `
+                <div class="script-card">
+                    <div class="script-instruction">
+                        <i class="ph ph-info"></i> ${step.instruction}
+                    </div>
+                    <div class="section-title">
+                        <i class="ph ph-number-circle-${sIdx + 1}"></i> ${step.title.split(': ')[1]}
+                    </div>
+                    <div class="script-actions">
+                        ${step.bubbles.map((bubble, bIdx) => {
+                            const key = `${categoryId}-${sIdx}-${bIdx}`;
+                            const isChecked = state.callFlowStates[key];
+                            return `
+                                <div class="script-checkbox-item ${isChecked ? 'checked' : ''}">
+                                    <input type="checkbox" id="sc-chk-${categoryId}-${sIdx}-${bIdx}" 
+                                        ${isChecked ? 'checked' : ''}
+                                        onchange="toggleIntegratedCheck('${categoryId}', ${sIdx}, ${bIdx}, this.checked)">
+                                    <label for="sc-chk-${categoryId}-${sIdx}-${bIdx}" class="script-bubble">
+                                        ${bubble}
+                                    </label>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `).join('')}
+            
+            <div style="display: flex; justify-content: center; margin-top: 20px;">
+                <button class="btn btn-secondary" onclick="resetIntegratedCallFlow('${categoryId}')">
+                    <i class="ph ph-arrows-counter-clockwise"></i> Reset Script Guide
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function toggleIntegratedCheck(catId, sIdx, iIdx, isChecked) {
+    const key = `${catId}-${sIdx}-${iIdx}`;
+    if (isChecked) {
+        state.callFlowStates[key] = true;
     } else {
-        openAddModal();
+        delete state.callFlowStates[key];
+    }
+    localStorage.setItem('it_ready_callflow_states', JSON.stringify(state.callFlowStates));
+    
+    const item = document.getElementById(`sc-chk-${catId}-${sIdx}-${iIdx}`).parentElement;
+    if (item) {
+        item.classList.toggle('checked', isChecked);
     }
 }
 
-function openChecklistModal(chkId) {
-    const chk = supportTools.checklists.find(c => c.id === chkId);
-    if (!chk) return;
-    
-    checklistTitle.innerHTML = `<i class="ph ${chk.icon}"></i> ${chk.title}`;
-    
-    checklistContent.innerHTML = chk.items.map((item, idx) => `
-        <div class="checklist-item" style="padding: 16px 0; font-size: 1.1rem; gap: 16px;">
-            <input type="checkbox" id="modal-chk-${idx}" style="width:24px;height:24px;accent-color:var(--accent); cursor: pointer;">
-            <label for="modal-chk-${idx}" style="cursor: pointer; flex: 1;">${item}</label>
-        </div>
-    `).join('');
-    
-    checklistModal.classList.add('active');
-}
-
-function closeChecklistModal() {
-    checklistModal.classList.remove('active');
+function resetIntegratedCallFlow(catId) {
+    if (confirm('Reset script guide for this category?')) {
+        Object.keys(state.callFlowStates).forEach(key => {
+            if (key.startsWith(catId + '-')) {
+                delete state.callFlowStates[key];
+            }
+        });
+        localStorage.setItem('it_ready_callflow_states', JSON.stringify(state.callFlowStates));
+        renderView();
+    }
 }
 
 // Initialize App
