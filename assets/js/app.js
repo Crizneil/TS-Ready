@@ -541,8 +541,8 @@ function renderView() {
                     <button class="btn-icon" data-action="read" title="Read Mode">
                         <i class="ph ph-book-open-text"></i>
                     </button>
-                    <button class="btn-icon" data-action="copy" title="Copy to clipboard">
-                        <i class="ph ph-copy"></i>
+                    <button class="btn" style="background: var(--accent); color: white; border: none; padding: 6px 14px; border-radius: 20px; font-weight: 600; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;" data-action="copy" title="Copy to clipboard">
+                        <i class="ph ph-copy"></i> Copy
                     </button>
                 </div>
             </div>
@@ -1220,3 +1220,18 @@ window.updateSubnetCalc = function() {
 
 // Initialize App
 document.addEventListener('DOMContentLoaded', init);
+
+document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.key.toLowerCase() === 'f') {
+        e.preventDefault();
+        const dSearch = document.getElementById('search-input-desktop');
+        const mSearch = document.getElementById('search-input-mobile');
+        if (dSearch && dSearch.offsetParent !== null) dSearch.focus();
+        else if (mSearch) mSearch.focus();
+    }
+    if (e.ctrlKey && e.key === '1') {
+        e.preventDefault();
+        if(typeof setView === 'function') setView('favorites');
+    }
+});
+

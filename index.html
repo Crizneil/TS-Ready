@@ -37,13 +37,12 @@
                 <img src="assets/images/logo.png" alt="Logo" style="width: 90%; height: 90%; object-fit: contain;">
             </div>
             <div id="landing-brand-text">
-                <h1 style="font-size: 2.5rem; font-weight: 800; letter-spacing: 2px; color: var(--text-primary); margin-bottom: 4px;">TS READY</h1>
-                <p id="crizneil-subtitle" style="font-size: 1rem; letter-spacing: 4px; color: var(--text-secondary); margin-bottom: 32px; font-weight: 700;">BY CRIZNEIL</p>
+                <h1 style="font-size: 2.2rem; font-weight: 800; letter-spacing: 1px; color: var(--text-primary); margin-bottom: 4px; display: flex; align-items: center; justify-content: center; gap: 8px;">TS READY <span style="font-size: 0.9rem; padding: 4px 10px; border-radius: 12px; background: var(--accent-light); color: var(--accent); letter-spacing: 0;">by crizneil</span></h1>
+                <p id="crizneil-subtitle" style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 32px; font-weight: 600;">Professional IT Support Tool</p>
             </div>
             
             <!-- Step 1: Start Working -->
             <div id="landing-step-1" class="landing-step active">
-                <p style="color: var(--text-secondary); margin-bottom: 32px; font-size: 1rem;">Professional Technical Support Assistant</p>
                 <div style="display: flex; flex-direction: column; gap: 12px; max-width: 280px; margin: 0 auto;">
                     <button class="btn btn-primary" id="landing-start-btn" style="width: 100%; justify-content: center; padding: 10px 20px; font-size: 0.95rem;">
                         <i class="ph ph-play"></i> Start Working
@@ -108,12 +107,20 @@
     <main id="main-content">
         <div class="mobile-search" style="display: none;" id="mobile-search-div">
             <div class="search-container" style="display: block; width: 100%; max-width: none;">
-                <input type="text" id="search-input-mobile" placeholder="Search IT terms..." autocomplete="off">
+                <input type="text" id="search-input-mobile" placeholder="Search issue... (e.g. wifi, slow internet)" autocomplete="off">
             </div>
         </div>
         
         
         <header>
+            <div style="display: flex; align-items: center; gap: 12px; margin-right: 24px; font-weight: 800; font-size: 1.2rem; color: var(--text-primary); cursor: pointer;" onclick="location.reload()">
+                <img src="assets/images/logo.png" alt="Logo" style="height: 38px; width: 38px; border-radius: 50%; box-shadow: var(--shadow);">
+                <div style="display: flex; flex-direction: column; justify-content: center;">
+                    <span style="letter-spacing: 1.5px;">TS READY</span>
+                    <span style="font-size: 0.65rem; color: var(--text-secondary); letter-spacing: 2px;">BY CRIZNEIL</span>
+                </div>
+            </div>
+
             <div id="top-nav-bar" style="display: flex; gap: 8px; flex: 1; margin-right: 24px;">
                 <button class="top-nav-btn nav-item" data-view="custom" title="Categories">
                     <i class="ph ph-squares-four"></i> <span>Categories</span>
@@ -131,7 +138,7 @@
 
             <div style="display: flex; align-items: center; gap: 12px; flex: 1; justify-content: flex-end;">
                 <div class="search-container" id="desktop-search-div">
-                    <input type="text" id="search-input-desktop" placeholder="Search knowledge, commands..." autocomplete="off">
+                    <input type="text" id="search-input-desktop" placeholder="Search issue... (e.g. wifi, slow internet)" autocomplete="off">
                 </div>
                 <button class="btn-icon" id="theme-toggle" title="Toggle Theme" style="background: var(--card-bg); border: 1px solid var(--border); width: 44px; height: 44px; border-radius: 30px; box-shadow: var(--shadow);">
                     <i id="theme-icon" class="ph ph-moon"></i>
