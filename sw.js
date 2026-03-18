@@ -1,4 +1,4 @@
-const CACHE_NAME = 'it-ready-v7';
+const CACHE_NAME = 'it-ready-v8';
 const ASSETS = [
   './',
   './index.html',
@@ -29,7 +29,23 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-  e.respondWith(
-    caches.match(e.request).then((response) => response || fetch(e.request))
-  );
+  // Use a Network-First strategy for the main page and critical assets to ensure updates
+  if (e.request.mode === 'navigate' || ASSETS.includes(e.request.url)) {
+    e.respondWith(
+      fetch(e.request)
+        .then((response) => {
+          const clonedResponse = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(e.request, clonedResponse);
+          });
+          return response;
+        })
+        .catch(() => caches.match(e.request))
+    );
+  } else {
+    // Cache-First for other assets
+    e.respondWith(
+      caches.match(e.request).then((response) => response || fetch(e.request))
+    );
+  }
 });
