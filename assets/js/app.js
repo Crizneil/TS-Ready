@@ -1,8 +1,7 @@
 // --- State Management ---
 const state = {
-    view: 'modules', // Default to modules study guide
+    view: 'custom', // Default to Categories grid
     searchQuery: '',
-    favorites: JSON.parse(localStorage.getItem('it_ready_favs')) || [],
     customPhrases: JSON.parse(localStorage.getItem('it_ready_custom')) || [],
     darkMode: localStorage.getItem('it_ready_dark') === 'true',
     callFlowStates: JSON.parse(localStorage.getItem('it_ready_callflow_states')) || {},
@@ -91,6 +90,10 @@ function setupEventListeners() {
     if (landingStartBtn) {
         landingStartBtn.addEventListener('click', () => {
             landingStep1.classList.remove('active');
+            // Hide subtitle when moving to Step 2
+            const subtitle = document.getElementById('crizneil-subtitle');
+            if (subtitle) subtitle.style.display = 'none';
+            
             setTimeout(() => {
                 landingStep1.style.display = 'none';
                 landingStep2.style.display = 'block';
@@ -102,6 +105,10 @@ function setupEventListeners() {
     if (backToStep1Btn) {
         backToStep1Btn.addEventListener('click', () => {
             landingStep2.classList.remove('active');
+            // Show subtitle when moving to Step 1
+            const subtitle = document.getElementById('crizneil-subtitle');
+            if (subtitle) subtitle.style.display = 'block';
+
             setTimeout(() => {
                 landingStep2.style.display = 'none';
                 landingStep1.style.display = 'block';
@@ -325,8 +332,8 @@ function setAppMode(mode) {
     state.mode = mode;
     document.body.classList.toggle('onsite-mode', mode === 'onsite');
     
-    // Set default view for mode
-    state.view = 'modules';
+    // Set default view to Categories (custom)
+    state.view = 'custom';
     
     renderCategoriesNav();
     setView(state.view);
@@ -372,8 +379,6 @@ function setView(viewId) {
     
     if (viewId === 'tools') {
         currentViewTitle.textContent = 'Support Tools';
-    } else if (viewId === 'favorites') {
-        currentViewTitle.textContent = 'Favorites';
     } else if (viewId === 'custom') {
         currentViewTitle.textContent = 'All Categories';
     } else if (viewId === 'client_checklist') {
@@ -449,9 +454,7 @@ function renderView() {
         });
         currentViewTitle.textContent = `Search results for "${state.searchQuery}"`;
     } else {
-        if (state.view === 'favorites') {
-            phrasesToRender = phrasesToRender.filter(p => state.favorites.includes(p.id));
-        } else if (state.view === 'custom') {
+        if (state.view === 'custom') {
             phrasesToRender = state.customPhrases;
         } else {
             phrasesToRender = phrasesToRender.filter(p => p.category === state.view);
@@ -485,7 +488,6 @@ function renderView() {
     
     contentGrid.style.display = 'grid';
     contentGrid.innerHTML = callFlowHtml + phrasesToRender.map(p => {
-        const isFav = state.favorites.includes(p.id);
         const isCustom = p.id.startsWith('cst_');
         return `
             <div class="card" data-id="${p.id}">
@@ -495,9 +497,6 @@ function renderView() {
                         <button class="btn-icon" data-action="edit" title="Edit"><i class="ph ph-pencil-simple"></i></button>
                         <button class="btn-icon" data-action="delete" title="Delete"><i class="ph ph-trash"></i></button>
                     ` : ''}
-                    <button class="btn-icon ${isFav ? 'active' : ''}" data-action="fav" title="Favorite">
-                        <i class="ph ${isFav ? 'ph-star-fill' : 'ph-star'}"></i>
-                    </button>
                     <button class="btn-icon" data-action="read" title="Read Mode">
                         <i class="ph ph-book-open-text"></i>
                     </button>

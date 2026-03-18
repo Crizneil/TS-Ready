@@ -22,20 +22,24 @@
     <!-- Loading Screen -->
     <div id="loading-screen">
         <div class="loader-content">
-            <div class="loader-logo" style="width: 120px; height: 120px; margin: 0 auto; overflow: hidden; border-radius: 50%;">
-                <img src="assets/images/logo.png" alt="Logo" style="width: 100%; height: 100%; object-fit: cover;">
+            <div class="loader-logo" style="width: 140px; height: 140px; margin: 0 auto; overflow: hidden; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: white; box-shadow: var(--shadow-hover);">
+                <img src="assets/images/logo.png" alt="Logo" style="width: 90%; height: 90%; object-fit: contain;">
             </div>
-            <p style="font-size: 0.8rem; letter-spacing: 2px; color: var(--text-secondary); margin-top: 12px; font-weight: 600;">BY CRIZNEIL</p>
+            <h1 style="margin-top: 24px; font-weight: 800; letter-spacing: 3px; color: var(--accent); font-size: 2rem;">TS READY</h1>
+            <p style="font-size: 0.85rem; letter-spacing: 2px; color: var(--text-secondary); margin-top: 4px; font-weight: 700;">BY CRIZNEIL</p>
         </div>
     </div>
 
     <!-- Landing Page -->
     <div id="landing-page" class="modal-overlay active" style="z-index: 2000; background: var(--bg-color);">
         <div class="landing-content" style="text-align: center; max-width: 500px; padding: 40px; background: var(--card-bg); border-radius: 30px; box-shadow: var(--shadow-hover); border: 1px solid var(--border); overflow: hidden; position: relative; min-height: 480px; display: flex; flex-direction: column; justify-content: center;">
-            <div class="landing-logo" style="width: 140px; height: 140px; margin: 0 auto 16px; overflow: hidden; border-radius: 50%; box-shadow: var(--shadow-hover);">
-                <img src="assets/images/logo.png" alt="Logo" style="width: 100%; height: 100%; object-fit: cover;">
+            <div class="landing-logo" style="width: 160px; height: 160px; margin: 0 auto 20px; overflow: hidden; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: white; box-shadow: var(--shadow-hover); border: 2px solid var(--accent-light);">
+                <img src="assets/images/logo.png" alt="Logo" style="width: 90%; height: 90%; object-fit: contain;">
             </div>
-            <p style="font-size: 1rem; letter-spacing: 3px; color: var(--text-secondary); margin-bottom: 32px; font-weight: 700;">BY CRIZNEIL</p>
+            <div id="landing-brand-text">
+                <h1 style="font-size: 2.5rem; font-weight: 800; letter-spacing: 2px; color: var(--text-primary); margin-bottom: 4px;">TS READY</h1>
+                <p id="crizneil-subtitle" style="font-size: 1rem; letter-spacing: 4px; color: var(--text-secondary); margin-bottom: 32px; font-weight: 700;">BY CRIZNEIL</p>
+            </div>
             
             <!-- Step 1: Start Working -->
             <div id="landing-step-1" class="landing-step active">
@@ -74,12 +78,7 @@
         </div>
     </div>
     <nav id="sidebar">
-        <div class="brand" style="font-size: 1rem; display: flex; align-items: center; gap: 12px; padding: 20px;">
-            <div style="width: 44px; height: 44px; overflow: hidden; border-radius: 50%; background: white; box-shadow: var(--shadow);">
-                <img src="assets/images/logo.png" alt="Logo" style="width: 100%; height: 100%; object-fit: cover;">
-            </div>
-            <span style="font-weight: 700; letter-spacing: 1px; font-size: 0.9rem;">BY CRIZNEIL</span>
-        </div>
+        <!-- Brand removed as per user request -->
         <div class="nav-section">
             <div id="categories-nav">
                 <!-- Injected via app.js -->
@@ -103,9 +102,7 @@
                 </a>
             </div>
         </div>
-        <div class="sidebar-footer" style="padding: 16px 24px; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--text-secondary); display: flex; align-items: center; gap: 8px;">
-            <i class="ph ph-user"></i> <span>By crizneil</span>
-        </div>
+        <!-- Sidebar footer removed as per user request -->
     </nav>
 
     <main id="main-content">
@@ -118,14 +115,11 @@
         
         <header>
             <div id="top-nav-bar" style="display: flex; gap: 8px; flex: 1; margin-right: 24px;">
-                <button class="top-nav-btn nav-item" data-view="tools" title="Support">
-                    <i class="ph ph-wrench"></i> <span>Support</span>
-                </button>
                 <button class="top-nav-btn nav-item" data-view="custom" title="Categories">
                     <i class="ph ph-squares-four"></i> <span>Categories</span>
                 </button>
-                <button class="top-nav-btn nav-item" data-view="favorites" title="Favorites">
-                    <i class="ph ph-star"></i> <span>Favorites</span>
+                <button class="top-nav-btn nav-item" data-view="tools" title="Support">
+                    <i class="ph ph-wrench"></i> <span>Support</span>
                 </button>
             </div>
 
