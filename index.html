@@ -22,10 +22,7 @@
     <!-- Loading Screen -->
     <div id="loading-screen">
         <div class="loader-content">
-            <div class="loader-logo" style="width: 140px; height: 140px; margin: 0 auto; overflow: hidden; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: white; box-shadow: var(--shadow-hover);">
-                <img src="assets/images/logo.png" alt="Logo" style="width: 90%; height: 90%; object-fit: contain;">
-            </div>
-            <h1 style="margin-top: 24px; font-weight: 800; letter-spacing: 3px; color: var(--accent); font-size: 2rem;">TS READY</h1>
+            <h1 style="margin-top: 24px; font-weight: 800; letter-spacing: 3px; color: var(--accent); font-size: 2rem; animation: pulse 2s infinite ease-in-out;">TS READY</h1>
             <p style="font-size: 0.85rem; letter-spacing: 2px; color: var(--text-secondary); margin-top: 4px; font-weight: 700;">BY CRIZNEIL</p>
         </div>
     </div>
@@ -33,16 +30,15 @@
     <!-- Landing Page -->
     <div id="landing-page" class="modal-overlay active" style="z-index: 2000; background: var(--bg-color);">
         <div class="landing-content" style="text-align: center; max-width: 500px; padding: 40px; background: var(--card-bg); border-radius: 30px; box-shadow: var(--shadow-hover); border: 1px solid var(--border); overflow: hidden; position: relative; min-height: 480px; display: flex; flex-direction: column; justify-content: center;">
-            <div class="landing-logo" style="width: 160px; height: 160px; margin: 0 auto 20px; overflow: hidden; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: white; box-shadow: var(--shadow-hover); border: 2px solid var(--accent-light);">
-                <img src="assets/images/logo.png" alt="Logo" style="width: 90%; height: 90%; object-fit: contain;">
-            </div>
-            <div id="landing-brand-text">
-                <h1 style="font-size: 2.2rem; font-weight: 800; letter-spacing: 1px; color: var(--text-primary); margin-bottom: 4px; display: flex; align-items: center; justify-content: center; gap: 8px;">TS READY <span style="font-size: 0.9rem; padding: 4px 10px; border-radius: 12px; background: var(--accent-light); color: var(--accent); letter-spacing: 0;">by crizneil</span></h1>
-                <p id="crizneil-subtitle" style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 32px; font-weight: 600;">Professional IT Support Tool</p>
-            </div>
-            
             <!-- Step 1: Start Working -->
             <div id="landing-step-1" class="landing-step active">
+                <div class="landing-logo" style="width: 160px; height: 160px; margin: 0 auto 20px; overflow: hidden; border-radius: 32px; display: flex; align-items: center; justify-content: center; background: white; box-shadow: var(--shadow-hover); border: 1px solid var(--border);">
+                    <img src="assets/images/logo.png" alt="Logo" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                </div>
+                <div id="landing-brand-text">
+                    <h1 style="font-size: 2.2rem; font-weight: 800; letter-spacing: 1px; color: var(--text-primary); margin-bottom: 4px; display: flex; align-items: center; justify-content: center; gap: 8px;">TS READY <span style="font-size: 0.9rem; padding: 4px 10px; border-radius: 12px; background: var(--accent-light); color: var(--accent); letter-spacing: 0;">by crizneil</span></h1>
+                    <p id="crizneil-subtitle" style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 32px; font-weight: 600;">Professional IT Support Tool</p>
+                </div>
                 <div style="display: flex; flex-direction: column; gap: 12px; max-width: 280px; margin: 0 auto;">
                     <button class="btn btn-primary" id="landing-start-btn" style="width: 100%; justify-content: center; padding: 10px 20px; font-size: 0.95rem;">
                         <i class="ph ph-play"></i> Start Working
@@ -77,47 +73,29 @@
         </div>
     </div>
     <nav id="sidebar">
-        <!-- Brand removed as per user request -->
         <div class="nav-section">
             <div id="categories-nav">
                 <!-- Injected via app.js -->
             </div>
-            
-                <!-- Injected via app.js -->
-            </div>
-            
             <div id="extra-nav">
-                <a class="nav-item" data-view="client_checklist">
-                    <i class="ph ph-clipboard-text"></i> <span class="nav-item-label">Pre-Call</span>
-                </a>
-                <a class="nav-item" data-view="cheat_sheet">
-                    <i class="ph ph-file-text"></i> <span class="nav-item-label">Cheat Sheet</span>
-                </a>
-                <a class="nav-item" data-view="utilities">
-                    <i class="ph ph-intersect"></i> <span class="nav-item-label">Utilities</span>
-                </a>
                 <a class="nav-item" id="switch-mode-btn" style="margin-top: 12px; opacity: 0.8;">
                     <i class="ph ph-arrows-left-right"></i> <span class="nav-item-label">Switch Mode</span>
                 </a>
             </div>
         </div>
-        <!-- Sidebar footer removed as per user request -->
     </nav>
 
     <main id="main-content">
-        <div class="mobile-search" style="display: none;" id="mobile-search-div">
-            <div class="search-container" style="display: block; width: 100%; max-width: none;">
-                <input type="text" id="search-input-mobile" placeholder="Search issue... (e.g. wifi, slow internet)" autocomplete="off">
-            </div>
-        </div>
-        
-        
         <header>
-            <div style="display: flex; align-items: center; gap: 12px; margin-right: 24px; font-weight: 800; font-size: 1.2rem; color: var(--text-primary); cursor: pointer;" onclick="location.reload()">
-                <img src="assets/images/logo.png" alt="Logo" style="height: 38px; width: 38px; border-radius: 50%; box-shadow: var(--shadow);">
-                <div style="display: flex; flex-direction: column; justify-content: center;">
-                    <span style="letter-spacing: 1.5px;">TS READY</span>
-                    <span style="font-size: 0.65rem; color: var(--text-secondary); letter-spacing: 2px;">BY CRIZNEIL</span>
+            <div style="display: flex; align-items: center; gap: 12px; margin-right: 24px;">
+                <button id="sidebar-toggle-btn" class="btn-icon" title="Toggle Sidebar" style="background: var(--card-bg); border: 1px solid var(--border); width: 44px; height: 44px; border-radius: 12px; box-shadow: var(--shadow); z-index: 150;">
+                    <i class="ph ph-list"></i>
+                </button>
+                <div style="display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 1.2rem; color: var(--text-primary); cursor: pointer;" onclick="location.reload()">
+                    <div style="display: flex; flex-direction: column; justify-content: center;">
+                        <span style="letter-spacing: 1.5px;">TS READY</span>
+                        <span style="font-size: 0.65rem; color: var(--text-secondary); letter-spacing: 2px;">BY CRIZNEIL</span>
+                    </div>
                 </div>
             </div>
 
@@ -128,8 +106,8 @@
                 <button class="top-nav-btn nav-item" data-view="tools" title="Support">
                     <i class="ph ph-wrench"></i> <span>Support</span>
                 </button>
-                <button class="top-nav-btn nav-item" data-view="favorites" title="Favorites">
-                    <i class="ph ph-heart"></i> <span>Favorites</span>
+                <button class="top-nav-btn nav-item" data-view="time_logs" title="Time Logs">
+                    <i class="ph ph-clock-counter-clockwise"></i> <span>Logs</span>
                 </button>
                 <button class="top-nav-btn nav-item" data-view="call_flow" title="Call Flow Guide">
                     <i class="ph ph-phone-call"></i> <span>Call Flow</span>
@@ -137,16 +115,16 @@
             </div>
 
             <div style="display: flex; align-items: center; gap: 12px; flex: 1; justify-content: flex-end;">
-                <div class="search-container" id="desktop-search-div">
-                    <input type="text" id="search-input-desktop" placeholder="Search issue... (e.g. wifi, slow internet)" autocomplete="off">
-                </div>
+                <button class="btn-icon" onclick="openSettingsModal()" title="Workspace Settings" style="background: var(--card-bg); border: 1px solid var(--border); width: 44px; height: 44px; border-radius: 30px; box-shadow: var(--shadow);">
+                    <i class="ph ph-gear"></i>
+                </button>
                 <button class="btn-icon" id="theme-toggle" title="Toggle Theme" style="background: var(--card-bg); border: 1px solid var(--border); width: 44px; height: 44px; border-radius: 30px; box-shadow: var(--shadow);">
                     <i id="theme-icon" class="ph ph-moon"></i>
                 </button>
             </div>
         </header>
 
-        <div id="session-info-bar" style="display: flex; gap: 12px; padding: 12px 24px; background: var(--card-bg); border-bottom: 1px solid var(--border); overflow-x: auto; white-space: nowrap;">
+        <div id="session-info-bar" style="display: flex; align-items: center; gap: 12px; padding: 12px 24px; background: var(--card-bg); border-bottom: 1px solid var(--border); overflow-x: auto; white-space: nowrap;">
             <div class="session-info-item">
                 <i class="ph ph-user"></i>
                 <input type="text" id="session-client-name" placeholder="Client Name..." class="session-input">
@@ -158,6 +136,25 @@
             <div class="session-info-item">
                 <i class="ph ph-barcode"></i>
                 <input type="text" id="session-serial-tag" placeholder="Serial/Asset Tag..." class="session-input">
+            </div>
+            
+            <div class="session-info-item timer-active" style="margin-left: auto; display: flex; align-items: center; gap: 12px;">
+                <div style="display: flex; align-items: center; gap: 8px; background: var(--bg-color); padding: 4px 12px; border-radius: 20px; border: 1px solid var(--border);">
+                    <i class="ph ph-clock" style="color: var(--text-secondary);"></i>
+                    <span id="digital-clock" style="font-weight: 700; font-family: monospace; font-size: 1rem; color: var(--text-primary);">00:00:00 AM</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px; background: var(--accent-light); padding: 4px 12px; border-radius: 20px; border: 1px solid var(--accent);">
+                    <i class="ph ph-timer" style="color: var(--accent);"></i>
+                    <span id="session-timer" style="font-weight: 800; font-family: monospace; font-size: 1rem; color: var(--accent);">00:00:00</span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-primary" id="start-work-btn" style="padding: 6px 16px; font-size: 0.85rem; height: 32px;">
+                        <i class="ph ph-play-circle"></i> Start Work
+                    </button>
+                    <button class="btn btn-primary" id="work-done-btn" style="padding: 6px 16px; font-size: 0.85rem; height: 32px; display: none; background: var(--danger); border: none;">
+                        <i class="ph ph-stop-circle"></i> Work Done
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -260,6 +257,43 @@
             #desktop-search-div { display: none !important; }
         }
     </style>
+
+    <!-- Phase 2 HTML Injections -->
+
+    <!-- Settings Modal (Team Sync) -->
+    <div id="settings-modal" class="modal-overlay" style="z-index: 2000;">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2><i class="ph ph-gear"></i> Workspace Settings</h2>
+                <button class="btn-icon" onclick="closeSettingsModal()"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="modal-body" style="display: flex; flex-direction: column; gap: 24px;">
+                
+                <div style="padding-top: 24px;">
+                    <h3 style="font-size: 1rem; color: var(--text-primary); margin-bottom: 8px;">Backup & Restore</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 16px;">Export your entire TS READY setup (Custom Phrases, Favorites, Settings) as a JSON file to share with your team, or import an existing company standard workspace.</p>
+                    
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <button class="btn btn-primary" onclick="exportWorkspace()">
+                            <i class="ph ph-download-simple"></i> Export Backup (.json)
+                        </button>
+                        <button class="btn btn-secondary" onclick="document.getElementById('import-file').click()">
+                            <i class="ph ph-upload-simple"></i> Import Backup
+                        </button>
+                        <input type="file" id="import-file" style="display: none;" accept=".json" onchange="importWorkspace(event)">
+                    </div>
+                </div>
+
+                <div style="border-top: 1px solid var(--border); padding-top: 24px;">
+                    <h3 style="font-size: 1rem; color: var(--text-primary); margin-bottom: 8px;">Danger Zone</h3>
+                    <button class="btn" style="background: rgba(239, 68, 68, 0.1); color: var(--danger); width: 100%; justify-content: center; border: 1px solid rgba(239, 68, 68, 0.2);" onclick="clearWorkspaceData()">
+                        <i class="ph ph-warning-circle"></i> Clear All WorkSpace Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <script src="assets/js/data.js"></script>
     <script src="assets/js/app.js"></script>

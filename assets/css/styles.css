@@ -85,9 +85,18 @@ body {
     border-right: 1px solid var(--border);
     display: flex;
     flex-direction: column;
-    z-index: 100;
-    transition: transform 0.3s ease;
-    padding-top: 20px; /* Space for removed brand */
+    z-index: 1000;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding-top: 20px;
+    flex-shrink: 0;
+}
+
+#sidebar.collapsed {
+    width: 0;
+    transform: translateX(-100%);
+    border-right: none;
+    opacity: 0;
+    pointer-events: none;
 }
 
 .brand i {
@@ -1398,3 +1407,37 @@ body.onsite-mode #sidebar .nav-item.active {
     border-radius: 4px;
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
+
+/* --- Phase 2: Enterprise Drawer & Animations --- */
+.drawer-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 2000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+.drawer-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+.drawer-panel {
+    right: -450px;
+    background: var(--bg-color);
+}
+.drawer-overlay.active .drawer-panel {
+    right: 0 !important;
+}
+
+/* Micro-animations for views */
+#content-grid, #tools-container {
+    animation: fadeInSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes fadeInSlideUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+

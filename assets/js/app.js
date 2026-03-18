@@ -1,14 +1,20 @@
 // --- State Management ---
 const state = {
     view: 'custom', // Default to Categories grid
-    searchQuery: '',
+    searchQuery: '', // Unused in UI but kept for compatibility
     customPhrases: JSON.parse(localStorage.getItem('it_ready_custom')) || [],
-    favorites: JSON.parse(localStorage.getItem('it_ready_favs')) || [],
     darkMode: localStorage.getItem('it_ready_dark') === 'true',
     callFlowStates: JSON.parse(localStorage.getItem('it_ready_callflow_states')) || {},
     sessionStarted: false,
     mode: 'oncall', // 'oncall' or 'onsite'
-    sessionInfo: JSON.parse(localStorage.getItem('it_ready_session_info')) || { client: '', device: '', serial: '' }
+    sessionInfo: JSON.parse(localStorage.getItem('it_ready_session_info')) || { client: '', device: '', serial: '' },
+    // Timer & Stats
+    isWorking: false,
+    startTime: null,
+    totalTimeToday: parseInt(localStorage.getItem('it_ready_total_time') || '0'),
+    sessionCountToday: parseInt(localStorage.getItem('it_ready_session_count') || '0'),
+    sessionLogs: JSON.parse(localStorage.getItem('it_ready_logs') || '[]'),
+    lastResetDate: localStorage.getItem('it_ready_last_reset') || new Date().toDateString()
 };
 
 // --- DOM Elements ---
@@ -17,7 +23,6 @@ const contentGrid = document.getElementById('content-grid');
 const toolsContainer = document.getElementById('tools-container');
 const currentViewTitle = document.getElementById('current-view-title');
 const navItems = document.querySelectorAll('.nav-item');
-const searchInputs = [document.getElementById('search-input-desktop'), document.getElementById('search-input-mobile')];
 const themeToggleBtn = document.getElementById('theme-toggle');
 
 // Modals
@@ -138,7 +143,24 @@ function setupEventListeners() {
         document.getElementById('landing-page').classList.remove('active');
         setTimeout(() => {
             document.getElementById('landing-page').style.display = 'none';
+            // Manual start only as requested: remove startWorkTimer()
         }, 300);
+    }
+    
+    // Timer Buttons
+    const workDoneBtn = document.getElementById('work-done-btn');
+    if (workDoneBtn) workDoneBtn.addEventListener('click', stopWorkTimer);
+    
+    const startWorkBtn = document.getElementById('start-work-btn');
+    if (startWorkBtn) startWorkBtn.addEventListener('click', startWorkTimer);
+
+    // Sidebar Toggle
+    const sidebarToggle = document.getElementById('sidebar-toggle-btn');
+    const sidebar = document.getElementById('sidebar');
+    if (sidebarToggle && sidebar) {
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+        });
     }
 
     // Session Info inputs
@@ -168,17 +190,6 @@ function setupEventListeners() {
     if (generateReportBtn) {
         generateReportBtn.addEventListener('click', generateSessionReport);
     }
-
-    // Search
-    searchInputs.forEach(input => {
-        if (!input) return;
-        input.addEventListener('input', (e) => {
-            state.searchQuery = e.target.value.toLowerCase();
-            // Sync both inputs
-            searchInputs.forEach(i => { if (i) i.value = state.searchQuery; });
-            renderView();
-        });
-    });
 
     // Theme Toggle
     if (themeToggleBtn) {
@@ -241,8 +252,6 @@ function setupEventListeners() {
         } else if (action === 'read') {
             readModeContent.textContent = phraseText;
             readModal.classList.add('active');
-        } else if (action === 'fav') {
-            toggleFavorite(phraseId);
         } else if (action === 'delete') {
             deleteCustomPhrase(phraseId);
         } else if (action === 'edit') {
@@ -256,17 +265,12 @@ function getAllPhrases() {
     return [...defaultPhrases, ...state.customPhrases];
 }
 
-function toggleFavorite(id) {
-    const index = state.favorites.indexOf(id);
-    if (index === -1) {
-        state.favorites.push(id);
-        showToast("Saved to Favorites!");
-    } else {
-        state.favorites.splice(index, 1);
-        showToast("Removed from Favorites");
+function deleteCustomPhrase(id) {
+    if (confirm('Are you sure you want to delete this custom phrase?')) {
+        state.customPhrases = state.customPhrases.filter(p => p.id !== id);
+        localStorage.setItem('it_ready_custom', JSON.stringify(state.customPhrases));
+        renderView();
     }
-    localStorage.setItem('it_ready_favs', JSON.stringify(state.favorites));
-    renderView(); // re-render to update heart icon immediately
 }
 
 function saveCustomPhrase() {
@@ -389,8 +393,6 @@ function updateNavActiveState() {
 
 function setView(viewId) {
     state.view = viewId;
-    state.searchQuery = '';
-    searchInputs.forEach(i => { if(i) i.value = ''; });
     updateNavActiveState();
     
     if (viewId === 'tools') {
@@ -399,10 +401,8 @@ function setView(viewId) {
         currentViewTitle.textContent = 'All Categories';
     } else if (viewId === 'client_checklist') {
         currentViewTitle.textContent = 'Client Pre-Call Checklist';
-    } else if (viewId === 'favorites') {
-        currentViewTitle.textContent = 'Favorites';
-    } else if (viewId === 'utilities') {
-        currentViewTitle.textContent = 'Utilities';
+    } else if (viewId === 'time_logs') {
+        currentViewTitle.textContent = 'Work Session Logs';
     } else if (viewId === 'call_flow') {
         currentViewTitle.textContent = state.mode === 'onsite' ? 'Field Procedure Guide' : 'Call Flow Guide';
     } else {
@@ -418,6 +418,13 @@ function renderView() {
         contentGrid.style.display = 'none';
         toolsContainer.style.display = 'block';
         renderClientChecklist();
+        return;
+    }
+
+    if (state.view === 'time_logs') {
+        contentGrid.style.display = 'none';
+        toolsContainer.style.display = 'block';
+        renderTimeLogs();
         return;
     }
 
@@ -474,29 +481,10 @@ function renderView() {
 
     let phrasesToRender = getAllPhrases();
 
-    if (state.searchQuery) {
-        const queryTerms = state.searchQuery.toLowerCase().split(/\s+/).filter(t => t.length > 0);
-        phrasesToRender = phrasesToRender.filter(p => {
-            const matchText = p.text.toLowerCase();
-            const matchTags = (p.tags || []).map(t => t.toLowerCase());
-            const categoryObj = categories.find(c => c.id === p.category);
-            const matchCategory = categoryObj ? categoryObj.label.toLowerCase() : '';
-            
-            return queryTerms.every(term => 
-                matchText.includes(term) || 
-                matchTags.some(t => t.includes(term)) || 
-                matchCategory.includes(term)
-            );
-        });
-        currentViewTitle.textContent = `Search results for "${state.searchQuery}"`;
+    if (state.view === 'custom') {
+        phrasesToRender = state.customPhrases;
     } else {
-        if (state.view === 'custom') {
-            phrasesToRender = state.customPhrases;
-        } else if (state.view === 'favorites') {
-            phrasesToRender = phrasesToRender.filter(p => state.favorites.includes(p.id));
-        } else {
-            phrasesToRender = phrasesToRender.filter(p => p.category === state.view);
-        }
+        phrasesToRender = phrasesToRender.filter(p => p.category === state.view);
     }
 
     contentGrid.style.display = 'grid';
@@ -535,9 +523,6 @@ function renderView() {
                         <button class="btn-icon" data-action="edit" title="Edit"><i class="ph ph-pencil-simple"></i></button>
                         <button class="btn-icon" data-action="delete" title="Delete"><i class="ph ph-trash"></i></button>
                     ` : ''}
-                    <button class="btn-icon ${state.favorites.includes(p.id) ? 'active' : ''}" data-action="fav" title="Favorite">
-                        <i class="ph ${state.favorites.includes(p.id) ? 'ph-heart-fill' : 'ph-heart'}"></i>
-                    </button>
                     <button class="btn-icon" data-action="read" title="Read Mode">
                         <i class="ph ph-book-open-text"></i>
                     </button>
@@ -857,7 +842,7 @@ function showToast(message) {
 
 function openAddModal(editingId = null) {
     document.getElementById('phrase-id').value = '';
-    document.getElementById('phrase-category').value = state.view !== 'tools' && state.view !== 'favorites' && state.view !== 'custom' ? state.view : 'general';
+    document.getElementById('phrase-category').value = state.view !== 'tools' && state.view !== 'custom' ? state.view : 'general';
     document.getElementById('phrase-text').value = '';
     document.getElementById('form-title').textContent = 'Add Custom Phrase';
 
@@ -1231,7 +1216,257 @@ document.addEventListener('keydown', (e) => {
     }
     if (e.ctrlKey && e.key === '1') {
         e.preventDefault();
-        if(typeof setView === 'function') setView('favorites');
+        if(typeof setView === 'function') setView('time_logs');
     }
 });
+
+
+/* --- Phase 2: Work Timer & Productivity Logic --- */
+
+function initTimerService() {
+    // Check for date reset
+    const today = new Date().toDateString();
+    if (state.lastResetDate !== today) {
+        state.totalTimeToday = 0;
+        state.sessionCountToday = 0;
+        state.lastResetDate = today;
+        localStorage.setItem('it_ready_total_time', '0');
+        localStorage.setItem('it_ready_session_count', '0');
+        localStorage.setItem('it_ready_last_reset', today);
+    }
+    
+    updateStatsDisplay();
+    
+    // Start Clock interval
+    setInterval(updateClock, 1000);
+    updateClock();
+}
+
+function updateClock() {
+    const clockEl = document.getElementById('digital-clock');
+    if (clockEl) {
+        const now = new Date();
+        clockEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
+    
+    if (state.isWorking) {
+        updateActiveTimer();
+    }
+}
+
+function startWorkTimer() {
+    state.isWorking = true;
+    state.startTime = Date.now();
+    
+    const workDoneBtn = document.getElementById('work-done-btn');
+    const startWorkBtn = document.getElementById('start-work-btn');
+    
+    if (workDoneBtn) workDoneBtn.style.display = 'flex';
+    if (startWorkBtn) startWorkBtn.style.display = 'none';
+    
+    showToast('Session started. Timer active.');
+}
+
+function updateActiveTimer() {
+    const timerEl = document.getElementById('session-timer');
+    if (!timerEl || !state.startTime) return;
+    
+    const elapsed = Date.now() - state.startTime;
+    const hours = Math.floor(elapsed / 3600000);
+    const minutes = Math.floor((elapsed % 3600000) / 60000);
+    const seconds = Math.floor((elapsed % 60000) / 1000);
+    
+    timerEl.textContent = 
+        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+function stopWorkTimer() {
+    if (!state.isWorking) return;
+    
+    const endTime = Date.now();
+    const duration = endTime - state.startTime;
+    
+    // Log the session
+    const logEntry = {
+        date: new Date().toLocaleDateString(),
+        start: new Date(state.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        end: new Date(endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        duration: Math.floor(duration / 60000) // minutes
+    };
+    
+    state.sessionLogs.unshift(logEntry); // Newest first
+    if (state.sessionLogs.length > 50) state.sessionLogs.pop(); // Keep last 50
+    
+    state.totalTimeToday += duration;
+    state.sessionCountToday += 1;
+    state.isWorking = false;
+    
+    localStorage.setItem('it_ready_total_time', state.totalTimeToday.toString());
+    localStorage.setItem('it_ready_session_count', state.sessionCountToday.toString());
+    localStorage.setItem('it_ready_logs', JSON.stringify(state.sessionLogs));
+    
+    const workDoneBtn = document.getElementById('work-done-btn');
+    const startWorkBtn = document.getElementById('start-work-btn');
+    
+    if (workDoneBtn) workDoneBtn.style.display = 'none';
+    if (startWorkBtn) startWorkBtn.style.display = 'flex';
+    
+    const timerEl = document.getElementById('session-timer');
+    if (timerEl) timerEl.textContent = '00:00:00';
+    
+    updateStatsDisplay();
+    showToast('Work Session Completed & Logged!');
+    
+    if (state.view === 'time_logs') renderTimeLogs();
+}
+
+function renderTimeLogs() {
+    if (!toolsContainer) return;
+    
+    toolsContainer.innerHTML = `
+        <div style="padding: 24px; max-width: 800px; margin: 0 auto; width: 100%;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+                <h2 style="font-size: 1.8rem; font-weight: 800; color: var(--text-primary);">Time Logs</h2>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <div style="background: var(--accent-light); padding: 8px 16px; border-radius: 12px; color: var(--accent); font-weight: 700;">
+                        ${state.sessionCountToday} Supports Today
+                    </div>
+                    <button class="btn" style="background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); padding: 8px 16px; border-radius: 12px; font-weight: 600; font-size: 0.85rem;" onclick="clearLogs()">
+                        <i class="ph ph-trash"></i> Clear Logs
+                    </button>
+                </div>
+            </div>
+
+            <div style="background: var(--card-bg); border-radius: 20px; border: 1px solid var(--border); overflow: hidden; box-shadow: var(--shadow);">
+                <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                    <thead>
+                        <tr style="background: var(--bg-color); border-bottom: 1px solid var(--border);">
+                            <th style="padding: 16px 24px; font-size: 0.85rem; color: var(--text-secondary); text-transform: uppercase;">Date</th>
+                            <th style="padding: 16px 24px; font-size: 0.85rem; color: var(--text-secondary); text-transform: uppercase;">Start</th>
+                            <th style="padding: 16px 24px; font-size: 0.85rem; color: var(--text-secondary); text-transform: uppercase;">End</th>
+                            <th style="padding: 16px 24px; font-size: 0.85rem; color: var(--text-secondary); text-transform: uppercase;">Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logs-table-body">
+                        ${state.sessionLogs.length === 0 ? `
+                            <tr>
+                                <td colspan="4" style="padding: 48px; text-align: center; color: var(--text-secondary);">
+                                    <i class="ph ph-clock-counter-clockwise" style="font-size: 3rem; display: block; margin-bottom: 16px; opacity: 0.3;"></i>
+                                    No sessions recorded yet. Click "Start Work" to begin tracking!
+                                </td>
+                            </tr>
+                        ` : state.sessionLogs.map(log => `
+                            <tr style="border-bottom: 1px solid var(--border);">
+                                <td style="padding: 16px 24px; font-weight: 600;">${log.date}</td>
+                                <td style="padding: 16px 24px;">${log.start}</td>
+                                <td style="padding: 16px 24px;">${log.end}</td>
+                                <td style="padding: 16px 24px;"><span style="background: var(--accent-light); color: var(--accent); padding: 4px 10px; border-radius: 8px; font-weight: 700;">${log.duration}m</span></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="margin-top: 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                <div style="background: var(--card-bg); padding: 24px; border-radius: 24px; border: 1px solid var(--border);">
+                    <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 8px; font-weight: 600;">DAILY TOTAL DURATION</div>
+                    <div style="font-size: 1.8rem; font-weight: 800; color: var(--accent);">
+                        ${Math.floor(state.totalTimeToday / 3600000)}h ${Math.floor((state.totalTimeToday % 3600000) / 60000)}m
+                    </div>
+                </div>
+                <div style="background: var(--card-bg); padding: 24px; border-radius: 24px; border: 1px solid var(--border);">
+                    <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 8px; font-weight: 600;">AVERAGE SESSION</div>
+                    <div style="font-size: 1.8rem; font-weight: 800; color: var(--success);">
+                        ${state.sessionCountToday > 0 ? Math.round((state.totalTimeToday / 60000) / state.sessionCountToday) : 0}m
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('current-view-title').textContent = 'Modules > Time Logs';
+}
+
+function clearLogs() {
+    if (confirm('Are you sure you want to clear all work logs and daily totals?')) {
+        state.sessionLogs = [];
+        state.totalTimeToday = 0;
+        state.sessionCountToday = 0;
+        
+        localStorage.setItem('it_ready_logs', JSON.stringify([]));
+        localStorage.setItem('it_ready_total_time', '0');
+        localStorage.setItem('it_ready_session_count', '0');
+        
+        renderTimeLogs();
+        showToast('Logs and totals cleared');
+    }
+}
+
+function updateStatsDisplay() {
+    // Stats are now exclusively in the Logs view, so this is mostly legacy cleanup
+    // But we update session count if we ever show it in header again
+}
+
+// Call timer init
+initTimerService();
+
+function openSettingsModal() {
+    const overlay = document.getElementById('settings-modal');
+    if (overlay) overlay.classList.add('active');
+}
+
+function closeSettingsModal() {
+    const overlay = document.getElementById('settings-modal');
+    if (overlay) overlay.classList.remove('active');
+}
+
+function exportWorkspace() {
+    const data = {
+        customPhrases: localStorage.getItem('it_ready_custom'),
+        callFlowStates: localStorage.getItem('it_ready_callflow_states'),
+        exportDate: new Date().toISOString()
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const dateStr = new Date().toISOString().split('T')[0];
+    a.download = `TS_READY_Workspace_${dateStr}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('Workspace Exported!');
+}
+
+function importWorkspace(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const data = JSON.parse(e.target.result);
+            if (data.customPhrases) localStorage.setItem('it_ready_custom', data.customPhrases);
+            if (data.callFlowStates) localStorage.setItem('it_ready_callflow_states', data.callFlowStates);
+            
+            showToast('Workspace Imported successfully! Reloading...');
+            setTimeout(() => location.reload(), 1500);
+        } catch (err) {
+            showToast('Invalid JSON Backup file');
+            console.error(err);
+        }
+    };
+    reader.readAsText(file);
+}
+
+function clearWorkspaceData() {
+    if(confirm('WARNING: This will delete ALL custom phrases and setup data. Proceed?')) {
+        localStorage.removeItem('it_ready_custom');
+        localStorage.removeItem('it_ready_callflow_states');
+        localStorage.removeItem('it_ready_copied_count');
+        showToast('Workspace Wiped. Reloading...');
+        setTimeout(() => location.reload(), 1000);
+    }
+}
 
