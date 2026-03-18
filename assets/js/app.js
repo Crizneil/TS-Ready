@@ -375,7 +375,7 @@ function setView(viewId) {
     } else if (viewId === 'favorites') {
         currentViewTitle.textContent = 'Favorites';
     } else if (viewId === 'custom') {
-        currentViewTitle.textContent = 'Personal Phrases';
+        currentViewTitle.textContent = 'All Categories';
     } else if (viewId === 'client_checklist') {
         currentViewTitle.textContent = 'Client Pre-Call Checklist';
     } else {
@@ -408,10 +408,10 @@ function renderView() {
         return;
     }
 
-    if (state.view === 'utilities') {
-        contentGrid.style.display = 'none';
-        toolsContainer.style.display = 'block';
-        renderUtilities();
+    if (state.view === 'custom') {
+        contentGrid.style.display = 'block';
+        toolsContainer.style.display = 'none';
+        renderCategoryGrid();
         return;
     }
 
@@ -434,12 +434,18 @@ function renderView() {
     let phrasesToRender = getAllPhrases();
 
     if (state.searchQuery) {
+        const queryTerms = state.searchQuery.toLowerCase().split(/\s+/).filter(t => t.length > 0);
         phrasesToRender = phrasesToRender.filter(p => {
-            const matchText = p.text.toLowerCase().includes(state.searchQuery);
-            const matchTag = p.tags && p.tags.some(t => t.toLowerCase().includes(state.searchQuery));
+            const matchText = p.text.toLowerCase();
+            const matchTags = (p.tags || []).map(t => t.toLowerCase());
             const categoryObj = categories.find(c => c.id === p.category);
-            const matchCategory = categoryObj && categoryObj.label.toLowerCase().includes(state.searchQuery);
-            return matchText || matchTag || matchCategory;
+            const matchCategory = categoryObj ? categoryObj.label.toLowerCase() : '';
+            
+            return queryTerms.every(term => 
+                matchText.includes(term) || 
+                matchTags.some(t => t.includes(term)) || 
+                matchCategory.includes(term)
+            );
         });
         currentViewTitle.textContent = `Search results for "${state.searchQuery}"`;
     } else {
@@ -502,6 +508,40 @@ function renderView() {
             </div>
         `;
     }).join('');
+}
+
+function renderCategoryGrid() {
+    const onCallCats = ['phone', 'printer', 'computer', 'networking', 'hardware', 'software', 'modules'];
+    const onSiteCats = ['phone', 'printer', 'computer', 'networking', 'hardware', 'software', 'on-site', 'modules'];
+    
+    const allowedCats = state.mode === 'onsite' ? onSiteCats : onCallCats;
+    const filteredCategories = categories.filter(cat => allowedCats.includes(cat.id));
+
+    contentGrid.className = 'portrait-scroll-area';
+    contentGrid.innerHTML = `
+        <div class="category-grid-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px; padding: 20px;">
+            ${filteredCategories.map(cat => `
+                <div class="category-card" onclick="setView('${cat.id}')" style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 24px; text-align: center; cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; box-shadow: var(--shadow);">
+                    <i class="ph-fill ${cat.icon}" style="font-size: 2.5rem; color: var(--accent);"></i>
+                    <span style="font-weight: 700; font-size: 1rem; color: var(--text-primary);">${cat.label}</span>
+                </div>
+            `).join('')}
+        </div>
+        <style>
+            .category-card:hover {
+                transform: translateY(-8px);
+                box-shadow: var(--shadow-hover);
+                border-color: var(--accent);
+                background: var(--accent-light);
+            }
+            .category-card i {
+                transition: transform 0.3s ease;
+            }
+            .category-card:hover i {
+                transform: scale(1.1);
+            }
+        </style>
+    `;
 }
 function renderModules() {
     const onSiteModules = ['mod_site_survey', 'mod_rack_management', 'mod_field_tools', 'mod_field_etiquette', 'mod_osi', 'mod_documentation'];
