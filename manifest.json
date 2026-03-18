@@ -1,6 +1,6 @@
 {
-  "name": "IT READY by crizneil",
-  "short_name": "IT READY",
+  "name": "TS READY by crizneil",
+  "short_name": "TS READY",
   "description": "A communication and troubleshooting assistant for IT freelancers.",
   "start_url": "./index.html",
   "display": "standalone",

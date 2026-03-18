@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover, handsfree=0">
-    <title>IT READY by crizneil</title>
+    <title>TS READY by crizneil</title>
     <meta name="description" content="A communication and troubleshooting assistant for IT freelancers.">
     <meta name="theme-color" content="#3b82f6">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="IT READY">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎧</text></svg>">
+    <meta name="apple-mobile-web-app-title" content="TS READY">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔧</text></svg>">
     <link rel="apple-touch-icon" href="assets/images/icon-192.png">
     <link rel="apple-touch-icon" sizes="152x152" href="assets/images/icon-192.png">
     <link rel="apple-touch-icon" sizes="180x180" href="assets/images/icon-192.png">
@@ -18,27 +18,95 @@
     <link rel="stylesheet" href="assets/css/styles.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
-<body>
+<body class="is-loading">
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loader-content">
+            <div class="loader-logo" style="position: relative; width: 100px; height: 100px; margin: 0 auto;">
+                <i class="ph-fill ph-headset" style="font-size: 4rem; color: var(--accent); position: absolute; top: 0; left: 0;"></i>
+                <i class="ph-fill ph-wrench" style="font-size: 2.5rem; color: var(--text-secondary); position: absolute; bottom: 0; right: 0; transform: rotate(-45deg); opacity: 0.8;"></i>
+            </div>
+            <h1 style="margin-top: 20px; font-weight: 700; letter-spacing: 2px; color: var(--accent);">TS READY</h1>
+        </div>
+    </div>
+
+    <!-- Landing Page -->
+    <div id="landing-page" class="modal-overlay active" style="z-index: 2000; background: var(--bg-color);">
+        <div class="landing-content" style="text-align: center; max-width: 500px; padding: 40px; background: var(--card-bg); border-radius: 30px; box-shadow: var(--shadow-hover); border: 1px solid var(--border); overflow: hidden; position: relative; min-height: 480px; display: flex; flex-direction: column; justify-content: center;">
+            <div class="landing-logo" style="position: relative; width: 100px; height: 100px; margin: 0 auto 24px;">
+                <i class="ph-fill ph-headset" style="font-size: 5rem; color: var(--accent);"></i>
+                <i class="ph-fill ph-wrench" style="font-size: 3rem; color: var(--text-secondary); position: absolute; bottom: -8px; right: -8px; transform: rotate(-45deg);"></i>
+            </div>
+            <h1 style="font-size: 2.2rem; margin-bottom: 8px;">TS READY</h1>
+            
+            <!-- Step 1: Start Working -->
+            <div id="landing-step-1" class="landing-step active">
+                <p style="color: var(--text-secondary); margin-bottom: 32px; font-size: 1rem;">Professional Technical Support Assistant</p>
+                <div style="display: flex; flex-direction: column; gap: 12px; max-width: 280px; margin: 0 auto;">
+                    <button class="btn btn-primary" id="landing-start-btn" style="width: 100%; justify-content: center; padding: 10px 20px; font-size: 0.95rem;">
+                        <i class="ph ph-play"></i> Start Working
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: Mode Selection -->
+            <div id="landing-step-2" class="landing-step" style="display: none;">
+                <p style="color: var(--text-secondary); margin-bottom: 24px; font-size: 0.95rem;">Select your support environment</p>
+                <div style="display: flex; flex-direction: column; gap: 12px; max-width: 320px; margin: 0 auto;">
+                    <button class="mode-card oncall" id="start-oncall-btn">
+                        <div class="mode-icon"><i class="ph-fill ph-headset"></i></div>
+                        <div class="mode-info">
+                            <h3>On-Call</h3>
+                            <p>Remote</p>
+                        </div>
+                    </button>
+                    
+                    <button class="mode-card onsite" id="start-onsite-btn">
+                        <div class="mode-icon"><i class="ph-fill ph-wrench"></i></div>
+                        <div class="mode-info">
+                            <h3>On-Site</h3>
+                            <p>Field</p>
+                        </div>
+                    </button>
+                </div>
+                <button class="btn-text" id="back-to-step-1-btn" style="margin-top: 24px; background: none; border: none; color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 500; font-size: 0.9rem; width: fit-content; margin-left: auto; margin-right: auto;">
+                    <i class="ph ph-arrow-left"></i> Back
+                </button>
+            </div>
+        </div>
+    </div>
     <nav id="sidebar">
-        <div class="brand" style="font-size: 1.1rem;">
-            <i class="ph-fill ph-headset"></i> IT READY <span style="font-weight: 400; font-size: 0.9rem; color: var(--text-secondary);">by crizneil</span>
+        <div class="brand" style="font-size: 1.1rem; display: flex; align-items: center; gap: 10px;">
+            <div style="position: relative; width: 32px; height: 32px;">
+                <i class="ph-fill ph-wrench" style="font-size: 1.8rem;"></i>
+            </div>
+            <span>TS READY</span>
         </div>
         <div class="nav-section">
             <div id="categories-nav">
                 <!-- Injected via app.js -->
             </div>
             
+                <!-- Injected via app.js -->
+            </div>
+            
             <div id="extra-nav">
-                <a class="nav-item" data-view="favorites">
-                    <i class="ph ph-star"></i> <span class="desktop-only">Favorites</span>
+                <a class="nav-item" data-view="client_checklist">
+                    <i class="ph ph-clipboard-text"></i> <span class="desktop-only">Pre-Call</span>
                 </a>
-                <a class="nav-item" data-view="custom">
-                    <i class="ph ph-list-plus"></i> <span class="desktop-only">Personal</span>
+                <a class="nav-item" data-view="cheat_sheet">
+                    <i class="ph ph-file-text"></i> <span class="desktop-only">Cheat Sheet</span>
                 </a>
-                <a class="nav-item" data-view="tools">
-                    <i class="ph ph-wrench"></i> <span class="desktop-only">Support</span>
+                <a class="nav-item" data-view="utilities">
+                    <i class="ph ph-intersect"></i> <span class="desktop-only">Utilities</span>
+                </a>
+                <a class="nav-item" id="switch-mode-btn" style="margin-top: 12px; opacity: 0.8;">
+                    <i class="ph ph-arrows-left-right"></i> <span class="desktop-only">Switch Mode</span>
                 </a>
             </div>
+        </div>
+        <div class="sidebar-footer" style="padding: 16px 24px; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--text-secondary); display: flex; align-items: center; gap: 8px;">
+            <i class="ph ph-user"></i> <span>By crizneil</span>
         </div>
     </nav>
 
@@ -49,17 +117,46 @@
             </div>
         </div>
         
+        
         <header>
-            <div class="header-title" id="current-view-title">General Client Communication</div>
-            <div style="display: flex; align-items: center; gap: 12px;">
+            <div id="top-nav-bar" style="display: flex; gap: 8px; flex: 1; margin-right: 24px;">
+                <button class="top-nav-btn nav-item" data-view="tools" title="Support">
+                    <i class="ph ph-wrench"></i> <span>Support</span>
+                </button>
+                <button class="top-nav-btn nav-item" data-view="custom" title="Personal">
+                    <i class="ph ph-list-plus"></i> <span>Personal</span>
+                </button>
+                <button class="top-nav-btn nav-item" data-view="favorites" title="Favorites">
+                    <i class="ph ph-star"></i> <span>Favorites</span>
+                </button>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 12px; flex: 1; justify-content: flex-end;">
                 <div class="search-container" id="desktop-search-div">
-                    <input type="text" id="search-input-desktop" placeholder="Search phrases, commands..." autocomplete="off">
+                    <input type="text" id="search-input-desktop" placeholder="Search knowledge, commands..." autocomplete="off">
                 </div>
                 <button class="btn-icon" id="theme-toggle" title="Toggle Theme" style="background: var(--card-bg); border: 1px solid var(--border); width: 44px; height: 44px; border-radius: 30px; box-shadow: var(--shadow);">
                     <i id="theme-icon" class="ph ph-moon"></i>
                 </button>
             </div>
         </header>
+
+        <div id="session-info-bar" style="display: flex; gap: 12px; padding: 12px 24px; background: var(--card-bg); border-bottom: 1px solid var(--border); overflow-x: auto; white-space: nowrap;">
+            <div class="session-info-item">
+                <i class="ph ph-user"></i>
+                <input type="text" id="session-client-name" placeholder="Client Name..." class="session-input">
+            </div>
+            <div class="session-info-item">
+                <i class="ph ph-desktop"></i>
+                <input type="text" id="session-device-model" placeholder="Device Model..." class="session-input">
+            </div>
+            <div class="session-info-item">
+                <i class="ph ph-barcode"></i>
+                <input type="text" id="session-serial-tag" placeholder="Serial/Asset Tag..." class="session-input">
+            </div>
+        </div>
+
+        <div class="header-breadcrumb" id="current-view-title" style="padding: 12px 24px; font-size: 0.9rem; color: var(--text-secondary); background: var(--bg-color); border-bottom: 1px solid var(--border);">Modules</div>
 
         <div id="view-container">
             <div id="content-grid" class="grid-list">
@@ -138,7 +235,10 @@
             <div class="modal-body">
                 <textarea class="form-control" id="global-quick-notes" placeholder="Customer Name: \nEmail: \nAccount ID: \nQuick Details..." style="height: 300px;"></textarea>
                 <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
-                    <button class="btn btn-secondary" id="reset-notes-btn">Clear All Notes</button>
+                    <button class="btn btn-secondary" id="reset-notes-btn">Clear All</button>
+                    <button class="btn btn-accent" id="generate-report-btn">
+                        <i class="ph ph-copy"></i> Copy Report
+                    </button>
                     <button class="btn btn-primary" id="save-notes-btn">Close</button>
                 </div>
             </div>
