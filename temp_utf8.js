@@ -1,9 +1,8 @@
-// --- State Management ---
+﻿// --- State Management ---
 const state = {
     view: 'custom', // Default to Categories grid
     searchQuery: '',
     customPhrases: JSON.parse(localStorage.getItem('it_ready_custom')) || [],
-    favorites: JSON.parse(localStorage.getItem('it_ready_favs')) || [],
     darkMode: localStorage.getItem('it_ready_dark') === 'true',
     callFlowStates: JSON.parse(localStorage.getItem('it_ready_callflow_states')) || {},
     sessionStarted: false,
@@ -237,7 +236,7 @@ function setupEventListeners() {
         const phraseText = card.querySelector('.card-text').textContent;
 
         if (action === 'copy') {
-            navigator.clipboard.writeText(phraseText).then(() => showToast("Copied to clipboard!"));
+            navigator.clipboard.writeText(phraseText).then(showToast);
         } else if (action === 'read') {
             readModeContent.textContent = phraseText;
             readModal.classList.add('active');
@@ -260,10 +259,8 @@ function toggleFavorite(id) {
     const index = state.favorites.indexOf(id);
     if (index === -1) {
         state.favorites.push(id);
-        showToast("Saved to Favorites!");
     } else {
         state.favorites.splice(index, 1);
-        showToast("Removed from Favorites");
     }
     localStorage.setItem('it_ready_favs', JSON.stringify(state.favorites));
     renderView(); // re-render to update heart icon immediately
@@ -295,7 +292,6 @@ function saveCustomPhrase() {
 
     localStorage.setItem('it_ready_custom', JSON.stringify(state.customPhrases));
     closeAddModal();
-    showToast("Phrase added successfully!");
     renderView();
 }
 
@@ -336,18 +332,6 @@ function setAppMode(mode) {
     state.mode = mode;
     document.body.classList.toggle('onsite-mode', mode === 'onsite');
     
-    // Update Call Flow Nav Button based on mode
-    const callFlowBtn = document.querySelector('[data-view="call_flow"]');
-    if (callFlowBtn) {
-        if (mode === 'onsite') {
-            callFlowBtn.innerHTML = '<i class="ph ph-person-simple-walk"></i> <span>Field Procedure</span>';
-            callFlowBtn.title = "Field Procedure Guide";
-        } else {
-            callFlowBtn.innerHTML = '<i class="ph ph-phone-call"></i> <span>Call Flow</span>';
-            callFlowBtn.title = "Call Flow Guide";
-        }
-    }
-
     // Set default view to Categories (custom)
     state.view = 'custom';
     
@@ -399,12 +383,6 @@ function setView(viewId) {
         currentViewTitle.textContent = 'All Categories';
     } else if (viewId === 'client_checklist') {
         currentViewTitle.textContent = 'Client Pre-Call Checklist';
-    } else if (viewId === 'favorites') {
-        currentViewTitle.textContent = 'Favorites';
-    } else if (viewId === 'utilities') {
-        currentViewTitle.textContent = 'Utilities';
-    } else if (viewId === 'call_flow') {
-        currentViewTitle.textContent = state.mode === 'onsite' ? 'Field Procedure Guide' : 'Call Flow Guide';
     } else {
         const cat = categories.find(c => c.id === viewId);
         currentViewTitle.textContent = cat ? cat.label : 'Phrases';
@@ -428,24 +406,10 @@ function renderView() {
         return;
     }
 
-    if (state.view === 'utilities') {
-        contentGrid.style.display = 'none';
-        toolsContainer.style.display = 'block';
-        renderUtilities();
-        return;
-    }
-
     if (state.view === 'cheat_sheet') {
         contentGrid.style.display = 'none';
         toolsContainer.style.display = 'block';
         renderCheatSheet();
-        return;
-    }
-
-    if (state.view === 'call_flow') {
-        contentGrid.style.display = 'none';
-        toolsContainer.style.display = 'block';
-        renderCallFlowGuide();
         return;
     }
 
@@ -492,8 +456,6 @@ function renderView() {
     } else {
         if (state.view === 'custom') {
             phrasesToRender = state.customPhrases;
-        } else if (state.view === 'favorites') {
-            phrasesToRender = phrasesToRender.filter(p => state.favorites.includes(p.id));
         } else {
             phrasesToRender = phrasesToRender.filter(p => p.category === state.view);
         }
@@ -535,9 +497,6 @@ function renderView() {
                         <button class="btn-icon" data-action="edit" title="Edit"><i class="ph ph-pencil-simple"></i></button>
                         <button class="btn-icon" data-action="delete" title="Delete"><i class="ph ph-trash"></i></button>
                     ` : ''}
-                    <button class="btn-icon ${state.favorites.includes(p.id) ? 'active' : ''}" data-action="fav" title="Favorite">
-                        <i class="ph ${state.favorites.includes(p.id) ? 'ph-heart-fill' : 'ph-heart'}"></i>
-                    </button>
                     <button class="btn-icon" data-action="read" title="Read Mode">
                         <i class="ph ph-book-open-text"></i>
                     </button>
@@ -664,7 +623,7 @@ function renderTools() {
                         </div>
                         <div>
                             ${cmdGrp.items.map(item => `
-                                <div class="command-item" title="Click to copy" onclick="navigator.clipboard.writeText('${item.cmd}').then(() => showToast('Copied command!'))" style="cursor:pointer;">
+                                <div class="command-item" title="Click to copy" onclick="navigator.clipboard.writeText('${item.cmd}').then(showToast)" style="cursor:pointer;">
                                     <div>
                                         <div class="command-text">${item.cmd}</div>
                                         <div class="command-desc">${item.desc}</div>
@@ -750,107 +709,10 @@ function renderClientChecklist() {
     toolsContainer.innerHTML = html;
 }
 
-function renderCallFlowGuide() {
-    const isOnsite = state.mode === 'onsite';
-    const flowData = isOnsite ? onsiteFlowData : callFlowData;
-    const titleText = isOnsite ? 'Field Procedure Guide' : 'Call Flow Guide';
-    const iconClass = isOnsite ? 'ph-person-simple-walk' : 'ph-phone-call';
-    const subtitle = isOnsite ? 'Standard procedure for on-site technical field visits.' : 'Follow this standard procedure for handling technical support requests.';
-    const greetingLabel = isOnsite ? 'Arrival Greeting Example' : 'Greeting Example';
-
-    let html = `
-        <div class="module-container">
-            <article class="module-article">
-                <h2><i class="ph ${iconClass}" style="margin-right: 8px;"></i> ${titleText}</h2>
-                <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 32px;">${subtitle}</p>
-                
-                <div style="background: var(--accent-light); padding: 16px; border-radius: 12px; margin-bottom: 24px; font-style: italic; border-left: 4px solid var(--accent);">
-                    <strong>${greetingLabel}:</strong> "${flowData.greeting}"
-                </div>
-
-                ${flowData.steps.map(step => `
-                    <div class="module-section" style="background: var(--card-bg); padding: 20px; border-radius: 16px; border: 1px solid var(--border); box-shadow: var(--shadow); margin-bottom: 16px;">
-                        <h3 style="margin-bottom: 16px; color: var(--accent); display: flex; align-items: center; gap: 8px;"><i class="ph ph-check-circle"></i> ${step.title}</h3>
-                        <ul style="margin-top: 12px; padding-left: 20px; line-height: 1.8; font-size: 0.95rem;">
-                            ${step.items.map(item => `<li style="margin-bottom: 8px;">${item}</li>`).join('')}
-                        </ul>
-                    </div>
-                `).join('')}
-            </article>
-        </div>
-    `;
-    toolsContainer.innerHTML = html;
-}
-
-function renderUtilities() {
-    let html = `
-        <div class="portrait-container" style="max-width: 900px;">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
-                <div class="utility-card">
-                    <h3 style="color: var(--accent); margin-bottom: 20px;"><i class="ph ph-calculator"></i> Subnet Calculator</h3>
-                    <div class="calc-input-group">
-                        <label style="font-size: 0.85rem; font-weight: 600;">CIDR Notation (e.g. 24)</label>
-                        <input type="number" id="calc-cidr" value="24" min="0" max="32" class="form-control" oninput="updateSubnetCalc()">
-                    </div>
-                    <div class="calc-grid">
-                        <div class="calc-input-group">
-                            <label style="font-size: 0.75rem; color: var(--text-secondary);">Subnet Mask</label>
-                            <div id="calc-mask" class="calc-result-badge">255.255.255.0</div>
-                        </div>
-                        <div class="calc-input-group">
-                            <label style="font-size: 0.75rem; color: var(--text-secondary);">IPs Available</label>
-                            <div id="calc-ips" class="calc-result-badge">254</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="utility-card">
-                    <h3 style="color: var(--accent); margin-bottom: 20px;"><i class="ph ph-plug-connected"></i> Port Reference</h3>
-                    <div style="height: 300px; overflow-y: auto; padding-right: 8px;">
-                        ${commonPorts.map(p => `
-                            <div style="padding: 10px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
-                                <div>
-                                    <span class="port-badge">${p.port}</span>
-                                    <strong>${p.service}</strong>
-                                </div>
-                                <div style="font-size: 0.75rem; color: var(--text-secondary);">${p.desc}</div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    toolsContainer.innerHTML = html;
-}
-
-window.updateSubnetCalc = function() {
-    const cidr = parseInt(document.getElementById('calc-cidr').value);
-    if (isNaN(cidr) || cidr < 0 || cidr > 32) return;
-    
-    // Calculate mask
-    let mask = [];
-    for (let i = 0; i < 4; i++) {
-        let n = Math.min(cidr - (i * 8), 8);
-        if (n < 0) n = 0;
-        mask.push(256 - Math.pow(2, 8 - n));
-    }
-    
-    // Calculate IPs
-    const ips = cidr === 32 ? 1 : cidr === 31 ? 2 : Math.pow(2, 32 - cidr) - 2;
-    
-    document.getElementById('calc-mask').textContent = mask.join('.');
-    document.getElementById('calc-ips').textContent = ips.toLocaleString();
-};
 
 // --- Utils ---
-function showToast(message) {
+function showToast() {
     const toast = document.getElementById('toast');
-    if (typeof message === 'string') {
-        toast.textContent = message;
-    } else {
-        toast.textContent = "Copied to clipboard!";
-    }
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 2000);
 }

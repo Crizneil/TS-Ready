@@ -593,6 +593,48 @@ const callFlowData = {
     ]
 };
 
+const onsiteFlowData = {
+    greeting: "Hello, I'm from IT Support. I'm here to take a look at the issue you reported.",
+    steps: [
+        {
+            id: 'step1',
+            title: 'Step 1: Arrival & Assessment',
+            items: [
+                'Introduce yourself professionally upon arrival.',
+                'Verify the reported issue with the user in person.',
+                'Assess the physical environment (cords, power, hardware damage).'
+            ]
+        },
+        {
+            id: 'step2',
+            title: 'Step 2: Troubleshooting (OSI Layers)',
+            items: [
+                'Layer 1: Check physical connections and power.',
+                'Layer 2-3: Verify network connectivity if applicable.',
+                'Layer 4-7: Troubleshoot software or application specifically.'
+            ]
+        },
+        {
+            id: 'step3',
+            title: 'Step 3: Resolution & Verification',
+            items: [
+                'Apply the fix and verify it works.',
+                'Ask the user to test the device themselves.',
+                'Explain what was fixed to the user briefly without overly technical jargon.'
+            ]
+        },
+        {
+            id: 'step4',
+            title: 'Step 4: Cleanup & Documentation',
+            items: [
+                'Ensure the workspace is physically clean and cables are neat.',
+                'Document the resolution in your ticketing system.',
+                'Thank the user and sign off clearly before leaving.'
+            ]
+        }
+    ]
+};
+
 const openingScripts = {
     'phone': 'I understand you are having trouble with your phone or VoIP line. "I understand how frustrating it is when your communication tools aren\'t working. Let\'s check your device status and connectivity right away."',
     'printer': '"I see you are having issues with your printer. I know how important it is to get those documents out. Let\'s verify the physical connections and see what\'s happening in the print queue."',

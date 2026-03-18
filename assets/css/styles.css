@@ -11,9 +11,9 @@
     --sidebar-bg: rgba(255, 255, 255, 0.85);
     --border: rgba(226, 232, 240, 0.8);
     --glass: rgba(255, 255, 255, 0.6);
-    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
-    --shadow-hover: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.05);
-    --radius: 16px;
+    --shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.05);
+    --shadow-hover: 0 10px 24px 0 rgba(0, 0, 0, 0.1);
+    --radius: 20px;
     --header-height: 70px;
     --danger: #ef4444;
     --success: #10b981;
@@ -578,6 +578,12 @@ textarea.form-control {
 @media (max-width: 768px) {
     body {
         flex-direction: column-reverse;
+    }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 8px;
     }
     
     #sidebar {
