@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="TS READY">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔧</text></svg>">
+    <link rel="icon" href="assets/images/logo.png">
     <link rel="apple-touch-icon" href="assets/images/icon-192.png">
     <link rel="apple-touch-icon" sizes="152x152" href="assets/images/icon-192.png">
     <link rel="apple-touch-icon" sizes="180x180" href="assets/images/icon-192.png">
@@ -22,9 +22,8 @@
     <!-- Loading Screen -->
     <div id="loading-screen">
         <div class="loader-content">
-            <div class="loader-logo" style="position: relative; width: 100px; height: 100px; margin: 0 auto;">
-                <i class="ph-fill ph-headset" style="font-size: 4rem; color: var(--accent); position: absolute; top: 0; left: 0;"></i>
-                <i class="ph-fill ph-wrench" style="font-size: 2.5rem; color: var(--text-secondary); position: absolute; bottom: 0; right: 0; transform: rotate(-45deg); opacity: 0.8;"></i>
+            <div class="loader-logo" style="width: 120px; height: 120px; margin: 0 auto; overflow: hidden; border-radius: 50%;">
+                <img src="assets/images/logo.png" alt="TS READY Logo" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
             <h1 style="margin-top: 20px; font-weight: 700; letter-spacing: 2px; color: var(--accent);">TS READY</h1>
         </div>
@@ -33,9 +32,8 @@
     <!-- Landing Page -->
     <div id="landing-page" class="modal-overlay active" style="z-index: 2000; background: var(--bg-color);">
         <div class="landing-content" style="text-align: center; max-width: 500px; padding: 40px; background: var(--card-bg); border-radius: 30px; box-shadow: var(--shadow-hover); border: 1px solid var(--border); overflow: hidden; position: relative; min-height: 480px; display: flex; flex-direction: column; justify-content: center;">
-            <div class="landing-logo" style="position: relative; width: 100px; height: 100px; margin: 0 auto 24px;">
-                <i class="ph-fill ph-headset" style="font-size: 5rem; color: var(--accent);"></i>
-                <i class="ph-fill ph-wrench" style="font-size: 3rem; color: var(--text-secondary); position: absolute; bottom: -8px; right: -8px; transform: rotate(-45deg);"></i>
+            <div class="landing-logo" style="width: 140px; height: 140px; margin: 0 auto 24px; overflow: hidden; border-radius: 50%; box-shadow: var(--shadow-hover);">
+                <img src="assets/images/logo.png" alt="TS READY Logo" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
             <h1 style="font-size: 2.2rem; margin-bottom: 8px;">TS READY</h1>
             
@@ -77,8 +75,8 @@
     </div>
     <nav id="sidebar">
         <div class="brand" style="font-size: 1.1rem; display: flex; align-items: center; gap: 10px;">
-            <div style="position: relative; width: 32px; height: 32px;">
-                <i class="ph-fill ph-wrench" style="font-size: 1.8rem;"></i>
+            <div style="width: 40px; height: 40px; overflow: hidden; border-radius: 50%; background: white;">
+                <img src="assets/images/logo.png" alt="Logo" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
             <span>TS READY</span>
         </div>
@@ -92,16 +90,16 @@
             
             <div id="extra-nav">
                 <a class="nav-item" data-view="client_checklist">
-                    <i class="ph ph-clipboard-text"></i> <span class="desktop-only">Pre-Call</span>
+                    <i class="ph ph-clipboard-text"></i> <span class="nav-item-label">Pre-Call</span>
                 </a>
                 <a class="nav-item" data-view="cheat_sheet">
-                    <i class="ph ph-file-text"></i> <span class="desktop-only">Cheat Sheet</span>
+                    <i class="ph ph-file-text"></i> <span class="nav-item-label">Cheat Sheet</span>
                 </a>
                 <a class="nav-item" data-view="utilities">
-                    <i class="ph ph-intersect"></i> <span class="desktop-only">Utilities</span>
+                    <i class="ph ph-intersect"></i> <span class="nav-item-label">Utilities</span>
                 </a>
                 <a class="nav-item" id="switch-mode-btn" style="margin-top: 12px; opacity: 0.8;">
-                    <i class="ph ph-arrows-left-right"></i> <span class="desktop-only">Switch Mode</span>
+                    <i class="ph ph-arrows-left-right"></i> <span class="nav-item-label">Switch Mode</span>
                 </a>
             </div>
         </div>
@@ -251,7 +249,6 @@
     <style>
         /* Mobile specific style tweaks inside HTML to ensure specificity */
         @media (max-width: 768px) {
-            .desktop-only { display: none !important; }
             #mobile-search-div { display: block !important; }
             #desktop-search-div { display: none !important; }
         }

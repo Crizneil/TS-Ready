@@ -343,7 +343,7 @@ function renderCategoriesNav() {
     categoriesNav.innerHTML = filteredCategories.map(cat => `
         <a class="nav-item ${state.view === cat.id ? 'active' : ''}" data-view="${cat.id}">
             <i class="ph ${cat.icon}"></i>
-            <span class="desktop-only">${cat.label}</span>
+            <span class="nav-item-label">${cat.label}</span>
         </a>
     `).join('');
 
@@ -437,7 +437,9 @@ function renderView() {
         phrasesToRender = phrasesToRender.filter(p => {
             const matchText = p.text.toLowerCase().includes(state.searchQuery);
             const matchTag = p.tags && p.tags.some(t => t.toLowerCase().includes(state.searchQuery));
-            return matchText || matchTag;
+            const categoryObj = categories.find(c => c.id === p.category);
+            const matchCategory = categoryObj && categoryObj.label.toLowerCase().includes(state.searchQuery);
+            return matchText || matchTag || matchCategory;
         });
         currentViewTitle.textContent = `Search results for "${state.searchQuery}"`;
     } else {
